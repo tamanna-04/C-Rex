@@ -2,15 +2,30 @@
 //board
 let board;
 let boardWidth = 750;
-let boardHeight = 250;
+let boardHeight = 500;      // 250
+let boardMid = 250;
 let context;
 
 //dino
-let dinoWidth = 88;
+let dinoWidth = 70;   //88
 let dinoHeight = 94;
 let dinoX = 50;
-let dinoY = boardHeight - dinoHeight;
+let dinoY = boardMid - dinoHeight;
 let dinoImg;
+
+//dino duck
+let DdinoWidth = 116;
+let DdinoHeight = 60;
+let DdinoX = dinoX;
+let DdinoY = boardMid - DdinoHeight;
+let DdinoImg;
+
+let Ddino = {
+    x : DdinoX,
+    y : DdinoY,
+    width : DdinoWidth,
+    height : DdinoHeight
+}
 
 let dino = {
     x : dinoX,
@@ -28,20 +43,33 @@ let cactus3Width = 102;
 
 let cactusHeight = 70;
 let cactusX = 700;
-let cactusY = boardHeight - cactusHeight;
+let cactusY = boardMid - cactusHeight;
 
 let cactus1Img;
 let cactus2Img;
 let cactus3Img;
 
 
-// birds
+// bird
+let birdArray = [];
 
+let bird1Width = 65;    //85
+let bird1Height = 65;
+
+let bird2Width = 93;
+let bird2Height = 62;
+
+let birdX = 700; 
+let bird1Y = boardMid - dinoHeight;        
+let bird2Y = boardMid - dinoHeight-40;
+
+let bird1Img;
+let bird2Img;
 
 
 
 //physics
-let velocityX = -8; //cactus moving left speed                                    //increase with score
+let velocityX = -8; //cactus moving left speed                //increase with score
 let velocityY = 0;
 let gravity = .4;
 
@@ -58,13 +86,21 @@ window.onload = function() {
     //draw initial dinosaur
     // context.fillStyle="green";
     // context.fillRect(dino.x, dino.y, dino.width, dino.height);
+    
 
+    //dino
     dinoImg = new Image();
     dinoImg.src = "./img/dino.png";
     dinoImg.onload = function() {
         context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+        
     }
 
+    //Ddino
+    DdinoImg = new Image();
+    DdinoImg.src = "./img/dino-duck2.png";
+
+    //cactus
     cactus1Img = new Image();
     cactus1Img.src = "./img/cactus1.png";
 
@@ -74,12 +110,15 @@ window.onload = function() {
     cactus3Img = new Image();
     cactus3Img.src = "./img/cactus3.png";
 
-    // bird img generation
+    //bird
+    bird1Img = new Image();
+    bird1Img.src = "./img/bird1.png";
 
-
+    bird2Img = new Image();
+    bird2Img.src = "./img/bird2.png";
     
     requestAnimationFrame(update);
-    setInterval(placeCactus, 1000); //1000 milliseconds = 1 second                             // cactus placement
+    setInterval(placeObstacle, 1000);                           // cactus placement
     document.addEventListener("keydown", moveDino);
 
     // add keydown to duck
@@ -95,7 +134,11 @@ function update() {
     //dino
     velocityY += gravity;
     dino.y = Math.min(dino.y + velocityY, dinoY); //apply gravity to current dino.y, making sure it doesn't exceed the ground
+
+    /////////////////////////
     context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+    // context.drawImage(DdinoImg, DdinoX, DdinoY, DdinoWidth, DdinoHeight);
+    
 
     //cactus
     for (let i = 0; i < cactusArray.length; i++) {
@@ -112,10 +155,21 @@ function update() {
         }
     }
 
-
     // bird
+    for (let i = 0; i < birdArray.length; i++) {
+        let bird = birdArray[i];
+        bird.x += velocityX;
 
+        context.drawImage(bird.img, bird.x, bird.y);
 
+        if (detectCollision(Ddino, bird)) {
+            gameOver = true;
+            dinoImg.src = "./img/dino-dead.png";
+            dinoImg.onload = function() {
+                context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+            }
+        }
+    }
 
     //score
     context.fillStyle="black";
@@ -139,8 +193,8 @@ function moveDino(e) {
 
 }
 
-function placeCactus() {
-    if (gameOver) {
+function placeObstacle() {
+    if(gameOver) {
         return;
     }
 
@@ -153,32 +207,133 @@ function placeCactus() {
         height: cactusHeight
     }
 
-    let placeCactusChance = Math.random(); //0 - 0.9999...                         // cactus placement 
+    let placeObstacleChance = Math.random(); //0 - 0.9999...                         // cactus placement 
 
-    if (placeCactusChance > .90) { //10% you get cactus3
+    if (.80 > placeObstacleChance > .90) { //10% you get cactus3   20
         cactus.img = cactus3Img;
         cactus.width = cactus3Width;
         cactusArray.push(cactus);
     }
-    else if (placeCactusChance > .70) { //30% you get cactus2
+    else if (.50 > placeObstacleChance > .70) { //30% you get cactus2    
         cactus.img = cactus2Img;
         cactus.width = cactus2Width;
         cactusArray.push(cactus);
     }
-    else if (placeCactusChance > .50) { //50% you get cactus1
+    else if (.10 > placeObstacleChance > .50) { //50% you get cactus1
         cactus.img = cactus1Img;
         cactus.width = cactus1Width;
         cactusArray.push(cactus);
     }
 
-    if (cactusArray.length > 5) {
+    if (cactusArray.length > 10) {
         cactusArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
+    }
+
+    //place bird
+    let bird = {
+        img : null,
+        x : birdX,
+        y : null,
+        width : null,
+        height : null
+    }
+
+    if(placeObstacleChance > .95) {
+        bird.img = bird2Img;
+        bird.y = bird2Y;
+        bird.width = bird2Width;
+        bird.height = bird2Height;
+        birdArray.push(bird);
+    }
+    else if(placeObstacleChance > .93) {
+        bird.img = bird1Img;
+        bird.y = bird1Y;
+        bird.width = bird1Width;
+        bird.height = bird1Height;
+        birdArray.push(bird);
+    }
+
+    if(birdArray.length > 5) {
+        birdArray.shift();
     }
 }
 
-// place bird
+// function placeCactus() {
+//     if (gameOver) {
+//         return;
+//     }
 
+//     //place cactus
+//     let cactus = {
+//         img : null,
+//         x : cactusX,
+//         y : cactusY,
+//         width : null,
+//         height: cactusHeight
+//     }
 
+//     let placeCactusChance = Math.random(); //0 - 0.9999...                         // cactus placement 
+
+//     if (placeCactusChance > .90) { //10% you get cactus3   20
+//         cactus.img = cactus3Img;
+//         cactus.width = cactus3Width;
+//         cactusArray.push(cactus);
+//     }
+//     else if (placeCactusChance > .70) { //30% you get cactus2    
+//         cactus.img = cactus2Img;
+//         cactus.width = cactus2Width;
+//         cactusArray.push(cactus);
+//     }
+//     else if (placeCactusChance > .50) { //50% you get cactus1
+//         cactus.img = cactus1Img;
+//         cactus.width = cactus1Width;
+//         cactusArray.push(cactus);
+//     }
+
+//     if (cactusArray.length > 10) {
+//         cactusArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
+//     }
+// }
+
+// // place bird
+
+// function placeBird()
+// {
+//     if(gameOver)
+//     {
+//         return;
+//     }
+
+//     //place bird
+//     let bird = {
+//         img : null,
+//         x : birdX,
+//         y : null,
+//         width : null,
+//         height : null
+//     }
+
+//     let placeBirdChance = Math.random();
+
+//     if(placeBirdChance > .70) {
+//         bird.img = bird2Img;
+//         bird.y = bird2Y;
+//         bird.width = bird2Width;
+//         bird.height = bird2Height;
+//         birdArray.push(bird);
+//     }
+//     else if(placeBirdChance > .30) {
+//         bird.img = bird1Img;
+//         bird.y = bird1Y;
+//         bird.width = bird1Width;
+//         bird.height = bird1Height;
+//         birdArray.push(bird);
+//     }
+
+//     if(birdArray.length > 5) {
+//         birdArray.shift();
+//     }
+// }
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
