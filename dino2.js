@@ -2,7 +2,7 @@
 //Connection
 //inverted merging
 //mathematics
-
+///INVERTED GAME
 
 //board
 let board;

@@ -1,3 +1,7 @@
+
+
+
+
 //board
 let board;
 let boardWidth = 750;
