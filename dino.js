@@ -5,22 +5,22 @@
 //board
 let board;
 let boardWidth = 750;
-let boardHeight = 500;      // 250
-let boardMid = 250;
+let boardHeight = 250;      // 250
+// let boardMid = 250;
 let context;
 
 //dino
 let dinoWidth = 70;   //88
 let dinoHeight = 94;
 let dinoX = 50;
-let dinoY = boardMid - dinoHeight;
+let dinoY = boardHeight - dinoHeight;
 let dinoImg;
 
 //dino duck
 let DdinoWidth = 116;
 let DdinoHeight = 60;
 let DdinoX = dinoX;
-let DdinoY = boardMid - DdinoHeight;
+let DdinoY = boardHeight - DdinoHeight;
 let DdinoImg;
 
 let Ddino = {
@@ -46,7 +46,7 @@ let cactus3Width = 102;
 
 let cactusHeight = 70;
 let cactusX = 700;
-let cactusY = boardMid - cactusHeight;
+let cactusY = boardHeight - cactusHeight;
 
 let cactus1Img;
 let cactus2Img;
@@ -63,8 +63,8 @@ let bird2Width = 93;
 let bird2Height = 62;
 
 let birdX = 700;
-let bird1Y = boardMid - dinoHeight;
-let bird2Y = boardMid - dinoHeight - 40;
+let bird1Y = boardHeight - dinoHeight;
+let bird2Y = boardHeight - dinoHeight - 40;
 
 let bird1Img;
 let bird2Img;
@@ -72,7 +72,7 @@ let bird2Img;
 
 
 //physics
-let velocityX = -8; //cactus moving left speed                //increase with score
+let velocityX = -8; //cactus moving left speed    //increase with score
 let velocityY = 0;
 let gravity = .4;
 
@@ -95,7 +95,7 @@ window.onload = function () {
     dinoImg = new Image();
     dinoImg.src = "./img/dino.png";
     dinoImg.onload = function () {
-        context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+    context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
 
     }
 
@@ -177,25 +177,25 @@ function update() {
     //score
     context.fillStyle = "black";
     context.font = "20px courier";
-    // score++;
+    score++;
     context.fillText(score, 5, 20);
 }
 
 
 
-// function moveDino(e) {
-//     if (gameOver) {
-//         return;
-//     }
+function moveDino(e) {
+    if (gameOver) {
+        return;
+    }
 
-//     if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
-//         //jump
-//         velocityY = -10;
-//     }
-//     else if (e.code == "ArrowDown" && dino.y == dinoY) {
-//         //duck                                                                        // duck motion 
-//     }
-// }
+    if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
+        //jump
+        velocityY = -10;
+    }
+    else if (e.code == "ArrowDown" && dino.y == dinoY) {
+        //duck                                                                        // duck motion 
+    }
+}
 
 function placeObstacle() {
     if (gameOver) {
@@ -211,6 +211,14 @@ function placeObstacle() {
         height: cactusHeight
     }
 
+    //place bird
+    let bird = {
+        img: null,
+        x: birdX,
+        y: null,
+        width: null,
+        height: null
+    }
     let placeObstacleChance = Math.random(); //0 - 0.9999...                         // cactus placement 
 
     if (.80 > placeObstacleChance > .90) { //10% you get cactus3   20
@@ -228,28 +236,14 @@ function placeObstacle() {
         cactus.width = cactus1Width;
         cactusArray.push(cactus);
     }
-
-    if (cactusArray.length > 10) {
-        cactusArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
-    }
-
-    //place bird
-    let bird = {
-        img: null,
-        x: birdX,
-        y: null,
-        width: null,
-        height: null
-    }
-
-    if (placeObstacleChance > .95) {
+    else if (0.10 > placeObstacleChance > 0.40) {
         bird.img = bird2Img;
         bird.y = bird2Y;
         bird.width = bird2Width;
         bird.height = bird2Height;
         birdArray.push(bird);
     }
-    else if (placeObstacleChance > .93) {
+    else if (0.90 > placeObstacleChance > .80) {
         bird.img = bird1Img;
         bird.y = bird1Y;
         bird.width = bird1Width;
@@ -257,6 +251,9 @@ function placeObstacle() {
         birdArray.push(bird);
     }
 
+    if (cactusArray.length > 10) {
+        cactusArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
+    }
     if (birdArray.length > 5) {
         birdArray.shift();
     }
