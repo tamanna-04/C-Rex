@@ -24,17 +24,17 @@ let DdinoY = boardMid - DdinoHeight;
 let DdinoImg;
 
 let Ddino = {
-    x : DdinoX,
-    y : DdinoY,
-    width : DdinoWidth,
-    height : DdinoHeight
+    x: DdinoX,
+    y: DdinoY,
+    width: DdinoWidth,
+    height: DdinoHeight
 }
 
 let dino = {
-    x : dinoX,
-    y : dinoY,
-    width : dinoWidth,
-    height : dinoHeight
+    x: dinoX,
+    y: dinoY,
+    width: dinoWidth,
+    height: dinoHeight
 }
 
 //cactus
@@ -62,9 +62,9 @@ let bird1Height = 65;
 let bird2Width = 93;
 let bird2Height = 62;
 
-let birdX = 700; 
-let bird1Y = boardMid - dinoHeight;        
-let bird2Y = boardMid - dinoHeight-40;
+let birdX = 700;
+let bird1Y = boardMid - dinoHeight;
+let bird2Y = boardMid - dinoHeight - 40;
 
 let bird1Img;
 let bird2Img;
@@ -79,7 +79,7 @@ let gravity = .4;
 let gameOver = false;
 let score = 0;
 
-window.onload = function() {
+window.onload = function () {
     board = document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
@@ -89,14 +89,14 @@ window.onload = function() {
     //draw initial dinosaur
     // context.fillStyle="green";
     // context.fillRect(dino.x, dino.y, dino.width, dino.height);
-    
+
 
     //dino
     dinoImg = new Image();
     dinoImg.src = "./img/dino.png";
-    dinoImg.onload = function() {
+    dinoImg.onload = function () {
         context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
-        
+
     }
 
     //Ddino
@@ -119,7 +119,7 @@ window.onload = function() {
 
     bird2Img = new Image();
     bird2Img.src = "./img/bird2.png";
-    
+
     requestAnimationFrame(update);
     setInterval(placeObstacle, 1000);                           // cactus placement
     document.addEventListener("keydown", moveDino);
@@ -141,7 +141,7 @@ function update() {
     /////////////////////////
     context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
     // context.drawImage(DdinoImg, DdinoX, DdinoY, DdinoWidth, DdinoHeight);
-    
+
 
     //cactus
     for (let i = 0; i < cactusArray.length; i++) {
@@ -152,7 +152,7 @@ function update() {
         if (detectCollision(dino, cactus)) {
             gameOver = true;
             dinoImg.src = "./img/dino-dead.png";
-            dinoImg.onload = function() {
+            dinoImg.onload = function () {
                 context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
             }
         }
@@ -168,45 +168,46 @@ function update() {
         if (detectCollision(Ddino, bird)) {
             gameOver = true;
             dinoImg.src = "./img/dino-dead.png";
-            dinoImg.onload = function() {
+            dinoImg.onload = function () {
                 context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
             }
         }
     }
 
     //score
-    context.fillStyle="black";
-    context.font="20px courier";
-    score++;
+    context.fillStyle = "black";
+    context.font = "20px courier";
+    // score++;
     context.fillText(score, 5, 20);
 }
 
-function moveDino(e) {
-    if (gameOver) {
-        return;
-    }
 
-    if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
-        //jump
-        velocityY = -10;
-    }
-    else if (e.code == "ArrowDown" && dino.y == dinoY) {
-        //duck                                                                        // duck motion 
-    }
 
-}
+// function moveDino(e) {
+//     if (gameOver) {
+//         return;
+//     }
+
+//     if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
+//         //jump
+//         velocityY = -10;
+//     }
+//     else if (e.code == "ArrowDown" && dino.y == dinoY) {
+//         //duck                                                                        // duck motion 
+//     }
+// }
 
 function placeObstacle() {
-    if(gameOver) {
+    if (gameOver) {
         return;
     }
 
     //place cactus
     let cactus = {
-        img : null,
-        x : cactusX,
-        y : cactusY,
-        width : null,
+        img: null,
+        x: cactusX,
+        y: cactusY,
+        width: null,
         height: cactusHeight
     }
 
@@ -234,21 +235,21 @@ function placeObstacle() {
 
     //place bird
     let bird = {
-        img : null,
-        x : birdX,
-        y : null,
-        width : null,
-        height : null
+        img: null,
+        x: birdX,
+        y: null,
+        width: null,
+        height: null
     }
 
-    if(placeObstacleChance > .95) {
+    if (placeObstacleChance > .95) {
         bird.img = bird2Img;
         bird.y = bird2Y;
         bird.width = bird2Width;
         bird.height = bird2Height;
         birdArray.push(bird);
     }
-    else if(placeObstacleChance > .93) {
+    else if (placeObstacleChance > .93) {
         bird.img = bird1Img;
         bird.y = bird1Y;
         bird.width = bird1Width;
@@ -256,7 +257,7 @@ function placeObstacle() {
         birdArray.push(bird);
     }
 
-    if(birdArray.length > 5) {
+    if (birdArray.length > 5) {
         birdArray.shift();
     }
 }
@@ -340,7 +341,7 @@ function placeObstacle() {
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+        a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
+        a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+        a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
 }
