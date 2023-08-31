@@ -119,7 +119,7 @@ window.onload = function() {
     
     requestAnimationFrame(update);
     setInterval(placeObstacle, 1000);                           // cactus placement
-    document.addEventListener("keydown", moveDino);
+    document.addEventListener("keydown",    Dino);
 
     // add keydown to duck
 }

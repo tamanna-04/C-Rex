@@ -1,22 +1,17 @@
-//Controls flip
-//Connection
-//inverted merging
-//mathematics
-///INVERTED GAME
+//INVERTED GAME
 
 //board
 let board;
 let boardWidth = 750;
-let boardHeight = 250;
+let boardHeight = 500;
+let boardMid = 250;
 let context;
 
 //dino
 let dinoWidth = 88;
 let dinoHeight = 94;
 let dinoX = 50;
-// let dinoY = boardHeight - dinoHeight;
-let dinoY = 2;
-
+let dinoY = boardMid;
 let dinoImg;
 
 let dino = {
@@ -35,60 +30,26 @@ let cactus3Width = 102;
 
 let cactusHeight = 70;
 let cactusX = 700;
-// let cactusY = boardHeight - cactusHeight;
-let cactusY = 2;
+
+let cactusY = boardMid;
 let cactus1Img;
 let cactus2Img;
 let cactus3Img;
 
-
-// birds
-
-
-
-
 //physics
-let velocityX = -8; //cactus moving left speed                                    //increase with score
+let velocityX = -8;            //cactus moving left speed
 let velocityY = 0;
 let gravity = 0.4;
 
 let gameOver = false;
 let score = 0;
 
-
-// Create a flag to track if the key is being held down
-// let isKeyHeld = false;
-
-// // Function to handle key down event
-// function onKeyDown(event) {
-//      if (event.key === " ") { // Check for space key
-//           isKeyHeld = true;
-//           console.log("Space key is being held down.");
-//      }
-// }
-
-// // Function to handle key up event
-// function onKeyUp(event) {
-//      if (event.key === " ") { // Check for space key
-//           isKeyHeld = false;
-//           console.log("Space key is released.");
-//      }
-// }
-
-// // Attach event listeners to the window
-// window.addEventListener("keydown", onKeyDown);
-// window.addEventListener("keyup", onKeyUp);
-
 window.onload = function () {
      board = document.getElementById("board");
      board.height = boardHeight;
      board.width = boardWidth;
 
-     context = board.getContext("2d"); //used for drawing on the board
-
-     //draw initial dinosaur
-     // context.fillStyle="green";
-     // context.fillRect(dino.x, dino.y, dino.width, dino.height);
+     context = board.getContext("2d");
 
      dinoImg = new Image();
      dinoImg.src = "./img_inverted/dino.png";
@@ -105,26 +66,12 @@ window.onload = function () {
      cactus3Img = new Image();
      cactus3Img.src = "./img_inverted/cactus3.png";
 
-     // bird img generation
-
-     // function isKeyDown() {
-     //      let a = document.addEventListener("keyup");
-     //      while (!a) {
-     //           return true;
-     //      }
-     // }
-
      requestAnimationFrame(update);
-     setInterval(placeCactus, 1000); //1000 milliseconds = 1 second                             // cactus placement
+     setInterval(placeCactus, 1000);
      document.addEventListener("keyup", moveDino);
      if (onKeyDown) {
           moveDino();
      }
-
-     // add keydown to duck
-
-
-
 }
 
 
@@ -140,6 +87,10 @@ function update() {
      velocityY += gravity;
      dino.y = Math.max(dino.y - velocityY, dinoY); //apply gravity to current dino.y, making sure it doesn't exceed the ground
      context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+
+     //baseline
+     context.fillStyle = "black";
+     context.fillRect(0, 250, boardWidth, 2);
 
      //cactus
      for (let i = 0; i < cactusArray.length; i++) {
@@ -157,12 +108,6 @@ function update() {
           }
      }
 
-
-     // bird
-     //if(score>100 && score<300){}
-
-
-
      //score
      context.fillStyle = "black";
      context.font = "20px courier";
@@ -176,13 +121,9 @@ function moveDino(e) {
      }
 
      if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
-          //jump
-          velocityY = -10; //-10
+          //update jump mechanics to jump
+          velocityY = -10;
      }
-     else if (e.code == "ArrowDown" && dino.y == dinoY) {
-          //duck                                                                        // duck motion 
-     }
-
 }
 
 function placeCactus() {
@@ -199,19 +140,19 @@ function placeCactus() {
           height: cactusHeight
      }
 
-     let placeCactusChance = Math.random(); //0 - 0.9999...                         // cactus placement 
+     let placeCactusChance = Math.random(); //0 - 0.9999...       
 
-     if (placeCactusChance > .90) { //10% you get cactus3
+     if (placeCactusChance > .90) { //10% chance of getting cactus3
           cactus.img = cactus3Img;
           cactus.width = cactus3Width;
           cactusArray.push(cactus);
      }
-     else if (placeCactusChance > .70) { //30% you get cactus2
+     else if (placeCactusChance > .70) { //30% chance of getting cactus2
           cactus.img = cactus2Img;
           cactus.width = cactus2Width;
           cactusArray.push(cactus);
      }
-     else if (placeCactusChance > .50) { //50% you get cactus1
+     else if (placeCactusChance > .50) { //50% chance of getting cactus1
           cactus.img = cactus1Img;
           cactus.width = cactus1Width;
           cactusArray.push(cactus);
@@ -221,10 +162,6 @@ function placeCactus() {
           cactusArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
      }
 }
-
-// place bird
-
-
 
 function detectCollision(a, b) {
      return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
